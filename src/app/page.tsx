@@ -1,94 +1,49 @@
 import Image from "next/image";
 import styles from "./page.module.css";
+import Navbar from "./components/Navbar/navbar";
+import Product from "./components/Product/product";
 
 export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+        <Navbar />
+        <section className={styles.hero}>
+          <div className={styles.hero_image}>
             <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              fill
+              objectFit="cover"
+              src="/landing_image.svg"
+              alt="Landing image"
+              // sizes="(max-width: 768px) 70vw, (max-width: 1200px) 50vw, 33vw"
+              // width={200}
+              // height={200}
+              className={styles.brandLogo}
             />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
+          </div>
+          <div className={styles.hero_content}>
+            <h1 className={styles.title}>Elevate Your Style</h1>
+            <p className={styles.tagline}>
+              Bismillah Collection Presents the latest trends in fashion with Quality, Comfort, and
+              Confidence.
+            </p>
+            <a href="#shop" className={styles.shop_button}>
+              Shop Now
+            </a>
+          </div>
+        </section>
+        <section id="shop" className={styles.featured}>
+          <h2>Featured Products</h2>
+          <div className={styles.featured_products}>
+            <Product />
+            <Product/>
+            <Product/>
+          </div>
+        </section>
       </main>
       <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+        &copy; {new Date().getFullYear()} Your Clothing Brand. All rights
+        reserved.
       </footer>
     </div>
   );
