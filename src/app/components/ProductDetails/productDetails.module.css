@@ -1,6 +1,5 @@
 .product_details {
   display: flex;
-  align-items: center;
   justify-content: center;
   margin: 50px 10%;
   gap: 20px;
@@ -37,4 +36,19 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+@media (max-width: 980px) {
+  .product_details {
+    flex-direction: column;
+    align-items: center;
+  }
+  .image_item {
+    width: 80px;
+    height: 80px;
+  }
+  .image_main {
+    width: 300px;
+    height: 300px;
+  }
 }
