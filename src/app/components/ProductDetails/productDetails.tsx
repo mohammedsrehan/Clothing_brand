@@ -17,6 +17,11 @@ import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 
 const ProductDetails = () => {
   const [size, setSize] = useState("");
+  const details = {
+    top: "Red embroidered Anarkali kurta with gold detailing",
+    bottom: "Matching red churidar pants",
+    dupatta: "Contrasting gold dupatta with red border",
+  };
 
   const handleChange = (event: SelectChangeEvent) => {
     setSize(event.target.value);
@@ -84,7 +89,10 @@ const ProductDetails = () => {
         </FormControl>
         <Button variant="outlined" startIcon={<AddShoppingCartIcon />} sx={{color: "black"}}>
           Add to Cart
-        </Button>{" "}
+        </Button>
+        <Button variant="outlined" startIcon={<AddShoppingCartIcon />} sx={{color: "black"}}>
+          Buy Now
+        </Button>
         <div className={styles.description}>
           <h3>Product Details</h3>
           <p>
@@ -92,6 +100,9 @@ const ProductDetails = () => {
             dolores explicabo non earum architecto totam asperiores, quos
             dolorem? Fuga, iste.
           </p>
+          <p><b>Top:</b> {details.top}</p>
+          <p><b>Bottom:</b> {details.bottom}</p>
+          <p><b>Dupatta:</b> {details.dupatta}</p>
         </div>
         <Accordion>
           <AccordionSummary
