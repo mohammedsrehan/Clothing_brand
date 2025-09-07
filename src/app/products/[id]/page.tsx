@@ -1,4 +1,5 @@
 // app/product/[id]/page.tsx
+import Navbar from '@/app/components/Navbar/navbar';
 import ProductDetails from '@/app/components/ProductDetails/productDetails';
 import { notFound } from 'next/navigation'
 
@@ -16,6 +17,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
   return (
     <div className="p-6">
+      <Navbar />
       <ProductDetails />
     </div>
   );
