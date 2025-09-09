@@ -10,7 +10,7 @@
   background-color: #fff;
   margin: 10px 5px;
   width: 250px;
-  height: 350px;
+  min-height: 350px;
 }
 .image_container {
   position: relative;
@@ -23,4 +23,10 @@
   align-items: left;
   gap: 5px;
   margin: 10px;
+}
+.product_actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
 }
