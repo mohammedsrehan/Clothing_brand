@@ -4,13 +4,25 @@ import styles from "./product.module.css";
 import { Button } from "@mui/material";
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 
-const Product = () => {
+interface ProductProps {
+  product: {
+    id: string;
+    collectionName: string; 
+    productName: string;
+    price: number;
+    images: string[];
+  }
+}
+
+const Product = ({
+  product
+}: ProductProps) => {
   return (
     <div className={styles.product}>
       <div className={styles.image_container}>
         <Image
           fill
-          src="/landing_image.svg"
+          src={product.images[0] || "/landing_image.svg"}
           alt="Classic Shirt"
           objectFit="cover"
           // width={180}
@@ -18,9 +30,9 @@ const Product = () => {
         />
       </div>
       <div className={styles.product_details}>
-        <p>Name of the Collection</p>
-        <h3>Classic Shirt</h3>
-        <p>$39.99</p>
+        <p>{product.collectionName}</p>
+        <h3>{product.productName}</h3>
+        <p>{product.price} Rs</p>
       </div>
       <div className={styles.product_actions}>
         <Button size="small" variant="outlined" startIcon={<AddShoppingCartIcon />} sx={{color: "black"}}>
