@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Image from "next/image";
 import styles from "./productDetails.module.css";
 import InputLabel from "@mui/material/InputLabel";
@@ -13,65 +13,92 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Button } from "@mui/material";
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import { useParams } from "next/navigation";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/app/firebase";
+
+interface ProductDetailsProps {
+    collectionName: string;
+    productName: string;
+    price: number;
+    description: string;
+    top: string;
+    bottom: string;
+    dupatta: string;
+    images: string[]; 
+}
 
 const ProductDetails = () => {
+  const params = useParams();
+  const productId = params.id;
+
   const [size, setSize] = useState("");
-  const details = {
-    top: "Red embroidered Anarkali kurta with gold detailing",
-    bottom: "Matching red churidar pants",
-    dupatta: "Contrasting gold dupatta with red border",
-  };
+  const [product, setProduct] = useState<ProductDetailsProps | null>(
+    null
+  );
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    if (productId) {
+      const getProduct = async () => {
+        const docRef = doc(db, "products", productId as string);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setProduct(docSnap.data() as ProductDetailsProps);
+          console.log("Product data:", docSnap.data());
+        } else {
+          console.log("No such document!");
+          setProduct(null);
+        }
+        setLoading(false);
+      };
+      getProduct();
+    }
+  }, [productId]);
 
   const handleChange = (event: SelectChangeEvent) => {
     setSize(event.target.value);
   };
+  if (loading) {
+    return <Typography variant="h5">Loading...</Typography>;
+  }
+
+  if (!product) {
+    return <Typography variant="h5">Product not found.</Typography>;
+  }
+  
   return (
     <div className={styles.product_details}>
       <div className={styles.image_container}>
         <div className={styles.image_list}>
-          <div className={styles.image_item}>
-            <Image
-              fill
-              objectFit="cover"
-              src="/landing_image.svg"
-              alt="Landing image"
-              className={styles.brandLogo}
-            />
-          </div>
-          <div className={styles.image_item}>
-            <Image
-              fill
-              objectFit="cover"
-              src="/landing_image.svg"
-              alt="Landing image"
-              className={styles.brandLogo}
-            />
-          </div>
-          <div className={styles.image_item}>
-            <Image
-              fill
-              objectFit="cover"
-              src="/landing_image.svg"
-              alt="Landing image"
-              className={styles.brandLogo}
-            />
-          </div>
+          {product.images.map((image, index) => (
+            <div key={index} className={styles.image_item}>
+              <Image
+                fill
+                objectFit="cover"
+                src={image}
+                alt={`${product.productName} thumbnail ${index + 1}`}
+              />
+            </div>
+          ))}
+          
         </div>
         <div className={styles.image_main}>
           <Image
             fill
             objectFit="cover"
-            src="/landing_image.svg"
-            alt="Landing image"
+            src={product.images[0]}
+            alt={product.productName}
             className={styles.brandLogo}
           />
         </div>
       </div>
       <div className={styles.product_details_content}>
-        <p>Name of the collection</p>
-        <h1>Product Name</h1>
-        <p className={styles.price}>$39.99</p>
+        <p>{product.collectionName}</p>
+        <h1>{product.productName}</h1>
+        <p className={styles.price}>{product.price} Rs</p>
         <p>Color: Red</p>
         <FormControl sx={{ m: 1, minWidth: 120 }}>
           <InputLabel id="demo-simple-select-helper-label">Size</InputLabel>
@@ -87,22 +114,34 @@ const ProductDetails = () => {
             <MenuItem value={30}>Large</MenuItem>
           </Select>
         </FormControl>
-        <Button variant="outlined" startIcon={<AddShoppingCartIcon />} sx={{color: "black"}}>
+        <Button
+          variant="outlined"
+          startIcon={<AddShoppingCartIcon />}
+          sx={{ color: "black" }}
+        >
           Add to Cart
         </Button>
-        <Button variant="outlined" startIcon={<AddShoppingCartIcon />} sx={{color: "black"}}>
+        <Button
+          variant="outlined"
+          startIcon={<AddShoppingCartIcon />}
+          sx={{ color: "black" }}
+        >
           Buy Now
         </Button>
         <div className={styles.description}>
           <h3>Product Details</h3>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore
-            dolores explicabo non earum architecto totam asperiores, quos
-            dolorem? Fuga, iste.
+            {product.description}
           </p>
-          <p><b>Top:</b> {details.top}</p>
-          <p><b>Bottom:</b> {details.bottom}</p>
-          <p><b>Dupatta:</b> {details.dupatta}</p>
+          <p>
+            <b>Top:</b> {product.top}
+          </p>
+          <p>
+            <b>Bottom:</b> {product.bottom}
+          </p>
+          <p>
+            <b>Dupatta:</b> {product.dupatta}
+          </p>
         </div>
         <Accordion>
           <AccordionSummary
