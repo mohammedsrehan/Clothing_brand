@@ -1,10 +1,9 @@
 "use client";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import styles from "./productDetails.module.css";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
-import FormHelperText from "@mui/material/FormHelperText";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import Accordion from "@mui/material/Accordion";
@@ -26,142 +25,154 @@ interface ProductDetailsProps {
     top: string;
     bottom: string;
     dupatta: string;
-    images: string[]; 
+    images: string[];
 }
 
 const ProductDetails = () => {
-  const params = useParams();
-  const productId = params.id;
+    const params = useParams();
+    const productId = params.id;
 
-  const [size, setSize] = useState("");
-  const [product, setProduct] = useState<ProductDetailsProps | null>(
-    null
-  );
-  const [loading, setLoading] = useState(true);
-  
-  useEffect(() => {
-    if (productId) {
-      const getProduct = async () => {
-        const docRef = doc(db, "products", productId as string);
-        const docSnap = await getDoc(docRef);
+    const [size, setSize] = useState("");
+    const [product, setProduct] = useState<ProductDetailsProps | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [mainImage, setMainImage] = useState<string>("");
 
-        if (docSnap.exists()) {
-          setProduct(docSnap.data() as ProductDetailsProps);
-          console.log("Product data:", docSnap.data());
-        } else {
-          console.log("No such document!");
-          setProduct(null);
+    useEffect(() => {
+        if (productId) {
+            const getProduct = async () => {
+                const docRef = doc(db, "products", productId as string);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const productData = docSnap.data() as ProductDetailsProps;
+                    setProduct(productData);
+                    // Set the first image as the main image
+                    if (productData.images && productData.images.length > 0) {
+                        setMainImage(productData.images[0]);
+                    }
+                    console.log("Product data:", productData);
+                } else {
+                    console.log("No such document!");
+                    setProduct(null);
+                }
+                setLoading(false);
+            };
+            getProduct();
         }
-        setLoading(false);
-      };
-      getProduct();
+    }, [productId]);
+
+    const handleChange = (event: SelectChangeEvent) => {
+        setSize(event.target.value);
+    };
+
+    if (loading) {
+        return <Typography variant="h5">Loading...</Typography>;
     }
-  }, [productId]);
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setSize(event.target.value);
-  };
-  if (loading) {
-    return <Typography variant="h5">Loading...</Typography>;
-  }
+    if (!product) {
+        return <Typography variant="h5">Product not found.</Typography>;
+    }
 
-  if (!product) {
-    return <Typography variant="h5">Product not found.</Typography>;
-  }
-  
-  return (
-    <div className={styles.product_details}>
-      <div className={styles.image_container}>
-        <div className={styles.image_list}>
-          {product.images.map((image, index) => (
-            <div key={index} className={styles.image_item}>
-              <Image
-                fill
-                objectFit="cover"
-                src={image}
-                alt={`${product.productName} thumbnail ${index + 1}`}
-              />
+    return (
+        <div className={styles.product_details_container}>
+            <div className={styles.product_image_gallery}>
+                <div className={styles.image_thumbnails}>
+                    {product.images.map((image, index) => (
+                        <div
+                            key={index}
+                            className={styles.thumbnail_item}
+                            onClick={() => setMainImage(image)}
+                        >
+                            <Image
+                                fill
+                                objectFit="cover"
+                                src={image}
+                                alt={`${product.productName} thumbnail ${index + 1}`}
+                            />
+                        </div>
+                    ))}
+                </div>
+                <div className={styles.main_image}>
+                    <Image
+                        fill
+                        objectFit="cover"
+                        src={mainImage}
+                        alt={product.productName}
+                    />
+                </div>
             </div>
-          ))}
-          
+            <div className={styles.product_info}>
+                <div className={styles.product_header}>
+                    <p className={styles.collection_name}>{product.collectionName}</p>
+                    <h1 className={styles.product_name}>{product.productName}</h1>
+                    <p className={styles.price}>Rs {product.price}</p>
+                </div>
+
+                <div className={styles.options_section}>
+                    <div className={styles.option_item}>
+                        <p>Color: <span className={styles.option_value}>Red</span></p>
+                    </div>
+                    <div className={styles.option_item}>
+                        <FormControl sx={{ minWidth: 120 }}>
+                            <InputLabel id="size-select-label">Size</InputLabel>
+                            <Select
+                                labelId="size-select-label"
+                                id="size-select"
+                                value={size}
+                                label="Size"
+                                onChange={handleChange}
+                            >
+                                <MenuItem value={"Small"}>Small</MenuItem>
+                                <MenuItem value={"Medium"}>Medium</MenuItem>
+                                <MenuItem value={"Large"}>Large</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
+                </div>
+
+                <div className={styles.action_buttons}>
+                    <Button
+                        variant="contained"
+                        sx={{ backgroundColor: "black", "&:hover": { backgroundColor: "#333" } }}
+                        startIcon={<AddShoppingCartIcon />}
+                    >
+                        Add to Cart
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        sx={{ color: "black", borderColor: "black", "&:hover": { borderColor: "#333" } }}
+                    >
+                        Buy Now
+                    </Button>
+                </div>
+
+                <div className={styles.description}>
+                    <h3>Product Details</h3>
+                    <p>{product.description}</p>
+                    <ul>
+                        <li><b>Top:</b> {product.top}</li>
+                        <li><b>Bottom:</b> {product.bottom}</li>
+                        <li><b>Dupatta:</b> {product.dupatta}</li>
+                    </ul>
+                </div>
+                
+                <Accordion className={styles.info_accordion}>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="shipping-panel-content"
+                        id="shipping-panel-header"
+                    >
+                        <Typography>Shipping & Returns</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Typography>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo lobortis eget.
+                        </Typography>
+                    </AccordionDetails>
+                </Accordion>
+            </div>
         </div>
-        <div className={styles.image_main}>
-          <Image
-            fill
-            objectFit="cover"
-            src={product.images[0]}
-            alt={product.productName}
-            className={styles.brandLogo}
-          />
-        </div>
-      </div>
-      <div className={styles.product_details_content}>
-        <p>{product.collectionName}</p>
-        <h1>{product.productName}</h1>
-        <p className={styles.price}>{product.price} Rs</p>
-        <p>Color: Red</p>
-        <FormControl sx={{ m: 1, minWidth: 120 }}>
-          <InputLabel id="demo-simple-select-helper-label">Size</InputLabel>
-          <Select
-            labelId="demo-simple-select-helper-label"
-            id="demo-simple-select-helper"
-            value={size}
-            label="Size"
-            onChange={handleChange}
-          >
-            <MenuItem value={10}>Small</MenuItem>
-            <MenuItem value={20}>Medium</MenuItem>
-            <MenuItem value={30}>Large</MenuItem>
-          </Select>
-        </FormControl>
-        <Button
-          variant="outlined"
-          startIcon={<AddShoppingCartIcon />}
-          sx={{ color: "black" }}
-        >
-          Add to Cart
-        </Button>
-        <Button
-          variant="outlined"
-          startIcon={<AddShoppingCartIcon />}
-          sx={{ color: "black" }}
-        >
-          Buy Now
-        </Button>
-        <div className={styles.description}>
-          <h3>Product Details</h3>
-          <p>
-            {product.description}
-          </p>
-          <p>
-            <b>Top:</b> {product.top}
-          </p>
-          <p>
-            <b>Bottom:</b> {product.bottom}
-          </p>
-          <p>
-            <b>Dupatta:</b> {product.dupatta}
-          </p>
-        </div>
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel2-content"
-            id="panel2-header"
-          >
-            <Typography component="span">Shipping & Returns</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-              eget.
-            </Typography>
-          </AccordionDetails>
-        </Accordion>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default ProductDetails;
