@@ -54,18 +54,18 @@
 } */
 
 /* Global styles and variables */
-:root {
+/* :root {
   --primary-color: #f5f5dc;
   --secondary-color: #333;
   --font-family-primary: 'Georgia', serif;
   --font-family-secondary: 'Arial', sans-serif;
   --max-width: 1200px;
-}
+} */
 
 body {
   margin: 0;
-  font-family: var(--font-family-secondary);
-  color: var(--secondary-color);
+  /* font-family: var(--font-family-secondary); */
+  color: #333;
   background-color: #f8f5f0;
 }
 
@@ -75,7 +75,7 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 5%;
-  background-color: var(--primary-color);
+  background-color: #f5f5dc;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
@@ -91,7 +91,7 @@ body {
 .nav a {
   margin-left: 2rem;
   text-decoration: none;
-  color: var(--secondary-color);
+  color: #333;
   font-weight: 500;
   transition: color 0.3s;
 }
@@ -102,7 +102,7 @@ body {
 
 .socialIcons a {
   margin-left: 1rem;
-  color: var(--secondary-color);
+  color: #333;
   font-size: 1.2rem;
   transition: color 0.3s;
 }
@@ -128,7 +128,7 @@ body {
   top: 50%;
   left: 10%;
   transform: translateY(-50%);
-  color: var(--secondary-color);
+  color: #333;
   z-index: 10;
   max-width: 500px;
 }
@@ -184,7 +184,7 @@ body {
   display: block;
   width: 50px;
   height: 2px;
-  background-color: var(--secondary-color);
+  background-color: #333;
   margin: 10px auto 0;
 }
 
@@ -275,13 +275,13 @@ body {
 
 .addToCartButton, .buyNowButton {
   padding: 0.6rem 1rem;
-  border: 1px solid var(--secondary-color);
+  border: 1px solid #333;
   cursor: pointer;
   transition: all 0.3s;
 }
 
 .addToCartButton {
-  background-color: var(--secondary-color);
+  background-color: #333;
   color: white;
 }
 
@@ -291,7 +291,7 @@ body {
 
 .buyNowButton {
   background-color: white;
-  color: var(--secondary-color);
+  color: #333;
 }
 
 .buyNowButton:hover {
@@ -302,8 +302,8 @@ body {
 .footer {
   text-align: center;
   padding: 2rem 5%;
-  background-color: var(--primary-color);
-  color: var(--secondary-color);
+  background-color: #f5f5dc;
+  color: #333;
 }
 
 
