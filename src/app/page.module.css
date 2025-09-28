@@ -1,4 +1,4 @@
-.hero {
+/* .hero {
   height: 70vh;
   display: flex;
   justify-content: center;
@@ -51,4 +51,306 @@
   align-items: center;
   justify-content: space-evenly;
   gap: 30px;
+} */
+
+/* Global styles and variables */
+:root {
+  --primary-color: #f5f5dc;
+  --secondary-color: #333;
+  --font-family-primary: 'Georgia', serif;
+  --font-family-secondary: 'Arial', sans-serif;
+  --max-width: 1200px;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family-secondary);
+  color: var(--secondary-color);
+  background-color: #f8f5f0;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 5%;
+  background-color: var(--primary-color);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo p {
+  font-family: var(--font-family-primary);
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.nav a {
+  margin-left: 2rem;
+  text-decoration: none;
+  color: var(--secondary-color);
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav a:hover {
+  color: #a0816c;
+}
+
+.socialIcons a {
+  margin-left: 1rem;
+  color: var(--secondary-color);
+  font-size: 1.2rem;
+  transition: color 0.3s;
+}
+
+.socialIcons a:hover {
+  color: #a0816c;
+}
+
+/* Hero Section */
+.hero {
+  position: relative;
+  width: 100%;
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #F8F5F0;
+}
+
+.heroContent {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  transform: translateY(-50%);
+  color: var(--secondary-color);
+  z-index: 10;
+  max-width: 500px;
+}
+
+.heroContent h1 {
+  font-family: var(--font-family-primary);
+  font-size: 4rem;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  color: #443c39;
+}
+
+.heroContent p {
+  font-size: 1.2rem;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+}
+
+.shopNowButton {
+  background-color: #a0816c;
+  color: white;
+  border: none;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.shopNowButton:hover {
+  background-color: #8c7365;
+}
+
+.heroImage {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 55%;
+  height: 100%;
+}
+
+/* Section Titles */
+.sectionTitle {
+  font-family: var(--font-family-primary);
+  font-size: 2.5rem;
+  text-align: center;
+  margin-top: 5rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.sectionTitle::after {
+  content: "";
+  display: block;
+  width: 50px;
+  height: 2px;
+  background-color: var(--secondary-color);
+  margin: 10px auto 0;
+}
+
+/* Collections Section */
+.collectionsSection {
+  padding: 0 5%;
+}
+
+.collectionsGrid {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  text-align: center;
+}
+
+.collectionCard {
+  width: 30%;
+  max-width: 300px;
+}
+
+.collectionImage {
+  position: relative;
+  width: 100%;
+  padding-top: 133%;
+  overflow: hidden;
+}
+
+.collectionCard h3 {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+/* Featured Products Section */
+.featuredProductsSection {
+  padding: 0 5%;
+  margin-bottom: 5rem;
+}
+
+.productsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  justify-items: center;
+}
+
+.productCard {
+  border: 1px solid #ddd;
+  padding: 1rem;
+  background-color: white;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.productCard:hover {
+  transform: translateY(-5px);
+}
+
+.productImage {
+  position: relative;
+  width: 100%;
+  padding-top: 125%; /* 4:5 aspect ratio */
+  overflow: hidden;
+}
+
+.productInfo {
+  margin-top: 1rem;
+}
+
+.productName {
+  font-weight: bold;
+}
+
+.productPrice {
+  color: #a0816c;
+  margin-top: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.productButtons {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.addToCartButton, .buyNowButton {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--secondary-color);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.addToCartButton {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.addToCartButton:hover {
+  background-color: #555;
+}
+
+.buyNowButton {
+  background-color: white;
+  color: var(--secondary-color);
+}
+
+.buyNowButton:hover {
+  background-color: #f0f0f0;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 2rem 5%;
+  background-color: var(--primary-color);
+  color: var(--secondary-color);
+}
+
+
+/* Media Queries for responsiveness */
+@media (max-width: 980px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+    height: auto;
+  }
+  
+  .heroContent {
+    position: absolute;
+    top: auto;
+    bottom: 20px;
+    left: auto;
+    right: auto;
+    transform: none;
+    padding: 2rem 5%;
+    max-width: 100%;
+    color: #fff;
+  }
+
+  .heroContent h1 {
+    font-size: 2.5rem;
+  }
+
+  .heroImage {
+    position: static;
+    width: 100%;
+    height: 400px;
+  }
+
+  .collectionsGrid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .collectionCard {
+    width: 80%;
+  }
+
+  .productsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .productCard {
+    width: 80%;
+  }
 }
