@@ -53,63 +53,13 @@
   gap: 30px;
 } */
 
-/* Global styles and variables */
-/* :root {
-  --primary-color: #f5f5dc;
-  --secondary-color: #333;
-  --font-family-primary: 'Georgia', serif;
-  --font-family-secondary: 'Arial', sans-serif;
-  --max-width: 1200px;
-} */
-
-body {
+.container {
   margin: 0;
   /* font-family: var(--font-family-secondary); */
   color: #333;
   background-color: #f8f5f0;
 }
 
-/* Header */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 5%;
-  background-color: #f5f5dc;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
-.logo p {
-  font-family: var(--font-family-primary);
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.nav a {
-  margin-left: 2rem;
-  text-decoration: none;
-  color: #333;
-  font-weight: 500;
-  transition: color 0.3s;
-}
-
-.nav a:hover {
-  color: #a0816c;
-}
-
-.socialIcons a {
-  margin-left: 1rem;
-  color: #333;
-  font-size: 1.2rem;
-  transition: color 0.3s;
-}
-
-.socialIcons a:hover {
-  color: #a0816c;
-}
 
 /* Hero Section */
 .hero {
