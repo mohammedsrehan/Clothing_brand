@@ -110,15 +110,15 @@ const featuredProducts = [
 const collections = [
   {
     name: "Pakistani Dresses",
-    image: "/pakistani.png",
+    image: "/pakistani_dress.png",
   },
   {
     name: "Indian Dresses",
-    image: "/indian.png",
+    image: "/indian_dress.png",
   },
   {
     name: "Sarees",
-    image: "/saree.png",
+    image: "/saree_dress.png",
   },
 ];
 
@@ -156,7 +156,7 @@ export default function LandingPage() {
         </div>
         <div className={styles.heroImage}>
           <Image
-            src="/hero.png"
+            src="/landing_image.png"
             alt="Model"
             layout="fill"
             objectFit="cover"

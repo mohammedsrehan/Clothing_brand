@@ -9,10 +9,10 @@ const Navbar = () => {
     <nav className={styles.navbar}>
       <div className={styles.navbar_logo}>
         <Image
-          src="/brand_logo.png"
+          src="/logo.png"
           alt="Brand Logo"
-          width={250}
-          height={120}
+          width={200}
+          height={100}
         />
       </div>
       <div className={styles.navbar_links}>
