@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "next/legacy/image";
 import styles from "./navbar.module.css";
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';

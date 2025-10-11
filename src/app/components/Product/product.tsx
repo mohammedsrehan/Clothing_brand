@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "next/legacy/image";
 import React from "react";
 import styles from "./product.module.css";
 import { Button } from "@mui/material";
@@ -21,7 +21,7 @@ const Product = ({ product }: ProductProps) => {
       <div className={styles.product}>
         <div className={styles.image_container}>
           <Image
-            fill
+            layout="fill"
             src={product.images[0] || "/landing_image.svg"}
             alt="Classic Shirt"
             objectFit="cover"

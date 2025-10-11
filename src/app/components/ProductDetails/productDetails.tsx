@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import styles from "./productDetails.module.css";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
@@ -111,7 +111,7 @@ const ProductDetails = () => {
               onClick={() => setMainImage(image)}
             >
               <Image
-                fill
+              layout="fill"
                 objectFit="contain"
                 src={image}
                 alt={`${product.productName} thumbnail ${index + 1}`}
@@ -119,9 +119,10 @@ const ProductDetails = () => {
             </div>
           ))}
         </div>
+
         <div className={styles.main_image}>
           <Image
-            fill
+            layout="fill"
             objectFit="cover"
             src={mainImage}
             alt={product.productName}
