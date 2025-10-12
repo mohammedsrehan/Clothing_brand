@@ -11,11 +11,13 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Box, Button, IconButton } from "@mui/material";
+import { Alert, Box, Button, IconButton, Snackbar } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { useParams } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/app/firebase";
+import { useDispatch } from "react-redux";
+import { addToCart } from "@/app/store/cartSlice";
 
 interface ProductDetailsProps {
   collectionName: string;
@@ -52,12 +54,16 @@ const getColorCode = (colorName: string): string => {
 const ProductDetails = () => {
   const params = useParams();
   const productId = params.id;
+  const dispatch = useDispatch();
 
-  const [size, setSize] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
   const [color, setColor] = useState("");
   const [product, setProduct] = useState<ProductDetailsProps | null>(null);
   const [loading, setLoading] = useState(true);
   const [mainImage, setMainImage] = useState<string>("");
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [errorSnackbar, setErrorSnackbar] = useState(false);
 
   useEffect(() => {
     if (productId) {
@@ -89,7 +95,38 @@ const ProductDetails = () => {
   };
 
   const handleChange = (event: SelectChangeEvent) => {
-    setSize(event.target.value);
+    setSelectedSize(event.target.value);
+  };
+
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    // Check if required options are selected
+    if (!selectedSize || !color) {
+      setErrorSnackbar(true);
+      return;
+    }
+
+    dispatch(
+      addToCart({
+        id: productId as string,
+        collectionName: product.collectionName,
+        productName: product.productName,
+        price: product.price,
+        image: product.images[0], // Use the first image for the cart
+        size: selectedSize,
+        color: color,
+      })
+    );
+    setOpenSnackbar(true);
+  };
+
+  const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
+    setErrorSnackbar(false);
   };
 
   if (loading) {
@@ -225,7 +262,7 @@ const ProductDetails = () => {
               <Select
                 labelId="size-select-label"
                 id="size-select"
-                value={size}
+                value={selectedSize}
                 label="Size"
                 onChange={handleChange}
               >
@@ -250,10 +287,11 @@ const ProductDetails = () => {
               "&:hover": { backgroundColor: "#333" },
             }}
             startIcon={<AddShoppingCartIcon />}
+            onClick={handleAddToCart}
           >
             Add to Cart
           </Button>
-          <Button
+          {/* <Button
             variant="outlined"
             sx={{
               color: "black",
@@ -262,7 +300,7 @@ const ProductDetails = () => {
             }}
           >
             Buy Now
-          </Button>
+          </Button> */}
         </div>
 
         <div className={styles.description}>
@@ -298,6 +336,17 @@ const ProductDetails = () => {
           </AccordionDetails>
         </Accordion>
       </div>
+      <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+          Item added to cart!
+        </Alert>
+      </Snackbar>
+      {/* Error Snackbar */}
+      <Snackbar open={errorSnackbar} autoHideDuration={3000} onClose={handleCloseSnackbar}>
+        <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+          Please select both **Size** and **Color**!
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
