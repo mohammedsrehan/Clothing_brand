@@ -1,65 +1,9 @@
-/* .hero {
-  height: 70vh;
-  display: flex;
-  justify-content: center;
-  text-align: center;
-  padding: 0px;
-}
-.hero_image{
-  width: 50%;
-  height: 100%;
-  position: relative;
-}
-.hero_content {
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: last baseline;
-  text-align: left;
-  gap: 20px;
-  padding: 50px;
-}
-.footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 25px 10px;
-}
-.shop_button {
-  padding: 10px 20px;
-  background-color: #000;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-.shop_button:hover {
-  background-color: #333;
-}
-.featured{
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 20px;
-  gap: 2px;
-}
-.featured_products{
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-evenly;
-  gap: 30px;
-} */
-
 .container {
   margin: 0;
   /* font-family: var(--font-family-secondary); */
   color: #333;
-  background-color: #F8F8FF;
+  background-color: #f8f8ff;
 }
-
 
 /* Hero Section */
 .hero {
@@ -70,7 +14,7 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background-color: #F8F8FF;
+  background-color: #f8f8ff;
 }
 
 .heroContent {
@@ -80,7 +24,7 @@
   transform: translateY(-50%);
   color: #333;
   z-index: 10;
-  max-width: 500px;
+  max-width: 450px;
 }
 
 .heroContent h1 {
@@ -227,7 +171,8 @@
   gap: 0.5rem;
 }
 
-.addToCartButton, .buyNowButton {
+.addToCartButton,
+.buyNowButton {
   padding: 0.6rem 1rem;
   border: 1px solid #333;
   cursor: pointer;
@@ -260,15 +205,19 @@
   color: #333;
 }
 
-
 /* Media Queries for responsiveness */
+@media (max-width: 1280px) {
+  .heroContent {
+    max-width: 350px;
+  }
+}
 @media (max-width: 980px) {
   .hero {
     flex-direction: column;
     text-align: center;
     height: auto;
   }
-  
+
   .heroContent {
     position: absolute;
     top: auto;
@@ -283,12 +232,24 @@
 
   .heroContent h1 {
     font-size: 2.5rem;
+    color: #fff;
   }
 
   .heroImage {
     position: static;
     width: 100%;
     height: 400px;
+  }
+  .heroImage::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Apply the gradient as a pseudo-element over the image */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5));
+    z-index: 1;
   }
 
   .collectionsGrid {
@@ -310,12 +271,20 @@
   }
 }
 
-@media (max-width:620px){
-  .collectionCard{
+@media (max-width: 620px) {
+  .collectionCard {
     /* flex-direction: column; */
     width: 150;
   }
   .productsGrid {
     grid-template-columns: 1fr;
+  }
+}
+@media (min-height: 1000px) {
+  .hero {
+    height: 40vh;
+  }
+  .heroContent {
+    max-width: 350px;
   }
 }
