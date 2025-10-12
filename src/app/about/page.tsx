@@ -1,10 +1,13 @@
+import { useState } from "react";
 import Navbar from "../components/Navbar/navbar";
 import styles from "./about.module.css";
 
 export default function About() {
+    const [isCartOpen, setIsCartOpen] = useState(false);
+  
   return (
     <div className={styles.container}>
-      <Navbar />
+      <Navbar onOpenCart={() => setIsCartOpen(true)} />
       <main className={styles.aboutPage}>
         <h1 className={styles.aboutTitle}>About Us</h1>
         <section className={styles.aboutSection}>
