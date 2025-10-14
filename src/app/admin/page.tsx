@@ -11,7 +11,7 @@ import {
   TextField,
   Alert,
 } from "@mui/material";
-import AddProduct from "../components/AddProduct/addProduct";
+import AddEditProductForm from "../components/AddProduct/addEditProduct";
 import { collection, getDocs, query } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import Product from "../components/Product/product";
@@ -22,6 +22,8 @@ import {
   signOut,
   User,
 } from "firebase/auth";
+import AdminProductCard from "../components/adminProductCard/adminProductCard";
+import AddEditProduct from "../components/AddProduct/addEditProduct";
 
 const AdminPage = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -29,6 +31,8 @@ const AdminPage = () => {
   const [password, setPassword] = useState<string>("");
   const [loginError, setLoginError] = useState<string>("");
   const [authLoading, setAuthLoading] = useState(false);
+
+  const [editProductId, setEditProductId] = useState<string | null>(null);
 
   const [activeSection, setActiveSection] = useState("allProducts");
   const [data, setData] = useState<any[]>([]);
@@ -102,28 +106,42 @@ const AdminPage = () => {
   const renderSection = () => {
     switch (activeSection) {
       case "addProduct":
-        return <AddProduct />;
+        return <AddEditProductForm />;
       case "allProducts":
-        return (
-          <Box sx={{ padding: 4 }}>
-            <Typography variant="h5" gutterBottom>
-              All Products
-            </Typography>
-            <div className={styles.products}>
-              {data.length === 0 ? (
-                <p>No products found</p>
-              ) : (
-                data.map((product) => (
-                  <Product key={product.id} product={product} />
-                ))
-              )}
-            </div>
-            <Typography variant="body1">
-              {/* This is the section where you would display the products from your database. */}
-              {/* This section is intentionally left blank for now. */}
-            </Typography>
-          </Box>
-        );
+  return (
+    <Box sx={{ padding: 4 }}>
+      <Typography variant="h5" gutterBottom>
+        All Products
+      </Typography>
+      {editProductId ? (
+        <AddEditProduct
+          productId={editProductId}
+          onComplete={() => {
+            setEditProductId(null);
+            getProducts();
+          }}
+        />
+      ) : (
+        <>
+          <div className={styles.products}>
+            {data.length === 0 ? (
+              <p>No products found</p>
+            ) : (
+              data.map((product) => (
+                <AdminProductCard
+                  key={product.id}
+                  product={product}
+                  onEdit={(id) => setEditProductId(id)}
+                  onDeleteComplete={getProducts}
+                />
+              ))
+            )}
+          </div>
+        </>
+      )}
+    </Box>
+  );
+
       case "ordersReceived":
         return (
           <Box sx={{ padding: 4 }}>
