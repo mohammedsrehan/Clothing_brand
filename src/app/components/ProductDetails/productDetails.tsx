@@ -30,6 +30,7 @@ interface ProductDetailsProps {
   images: string[];
   size: string[];
   colorOptions: string[];
+  stitchingType: string;
 }
 
 // Utility function to map color names to simple hex codes for display.
@@ -121,8 +122,11 @@ const ProductDetails = () => {
     setOpenSnackbar(true);
   };
 
-  const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
+  const handleCloseSnackbar = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
       return;
     }
     setOpenSnackbar(false);
@@ -148,7 +152,7 @@ const ProductDetails = () => {
               onClick={() => setMainImage(image)}
             >
               <Image
-              layout="fill"
+                layout="fill"
                 objectFit="contain"
                 src={image}
                 alt={`${product.productName} thumbnail ${index + 1}`}
@@ -171,6 +175,17 @@ const ProductDetails = () => {
           <p className={styles.collection_name}>{product.collectionName}</p>
           <h1 className={styles.product_name}>{product.productName}</h1>
           <p className={styles.price}>Rs {product.price}</p>
+
+          <Typography
+            variant="subtitle1"
+            component="p"
+            sx={{ mt: 1, color: "#333", fontWeight: 600 }}
+          >
+            Stitching:{" "}
+            <Box component="span" sx={{ fontWeight: 400 }}>
+              {product.stitchingType}
+            </Box>
+          </Typography>
         </div>
 
         <div className={styles.options_section}>
@@ -329,21 +344,39 @@ const ProductDetails = () => {
           </AccordionSummary>
           <AccordionDetails>
             <Typography>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-              Suspendisse malesuada lacus ex, sit amet blandit leo lobortis
-              eget.
+              We offer direct delivery right to your specified customer address.
+              Please note that a shipping cost will be applied and calculated at
+              checkout based on your location. We
+              strive to process and ship all orders quickly, and we accept
+              returns within 30 days of delivery.
             </Typography>
           </AccordionDetails>
         </Accordion>
       </div>
-      <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
           Item added to cart!
         </Alert>
       </Snackbar>
       {/* Error Snackbar */}
-      <Snackbar open={errorSnackbar} autoHideDuration={3000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: '100%' }}>
+      <Snackbar
+        open={errorSnackbar}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
           Please select both **Size** and **Color**!
         </Alert>
       </Snackbar>
