@@ -102,7 +102,7 @@
 .collectionImage {
   position: relative;
   width: 100%;
-  padding-top: 133%;
+  /* padding-top: 133%; */
   overflow: hidden;
 }
 
@@ -146,7 +146,7 @@
 .productImage {
   position: relative;
   width: 100%;
-  padding-top: 125%; /* 4:5 aspect ratio */
+  padding-top: 125%;
   overflow: hidden;
 }
 
