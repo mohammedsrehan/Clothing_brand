@@ -25,9 +25,9 @@ const collections = [
 
 export default function LandingPage() {
   const [data, setData] = useState<any[]>([]);
-  
+
   // CRITICAL: State to control the visibility of the Cart Modal (Drawer)
-  const [isCartOpen, setIsCartOpen] = useState(false); 
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const getProducts = async () => {
     // Fetches products from Firestore
@@ -46,11 +46,11 @@ export default function LandingPage() {
   return (
     <div className={styles.container}>
       {/* 1. Navbar is rendered and given the function to OPEN the cart */}
-      <Navbar onOpenCart={() => setIsCartOpen(true)} /> 
+      <Navbar onOpenCart={() => setIsCartOpen(true)} />
 
       {/* 2. CartModal is rendered and controls its visibility based on state */}
-      <CartModal 
-        isOpen={isCartOpen} 
+      <CartModal
+        isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)} // Function to CLOSE the cart
       />
 
@@ -62,13 +62,15 @@ export default function LandingPage() {
             Bismillah Collection Presents the latest trends in fashion with
             Quality, Comfort, and Confidence.
           </p>
-          <button className={styles.shopNowButton}>Shop Now</button>
+          <button className={styles.shopNowButton}>
+            <a href="#shop">Shop Now</a>
+          </button>
         </div>
         <div className={styles.heroImage}>
-          <img 
+          <img
             src="/landing_image.png"
             alt="Model"
-            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+            style={{ objectFit: "cover", width: "100%", height: "100%" }}
           />
         </div>
       </section>
@@ -80,10 +82,10 @@ export default function LandingPage() {
           {collections.map((collection, index) => (
             <div key={index} className={styles.collectionCard}>
               <div className={styles.collectionImage}>
-                <img 
-                    src={collection.image}
-                    alt={collection.name}
-                    style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+                <img
+                  src={collection.image}
+                  alt={collection.name}
+                  style={{ objectFit: "cover", width: "100%", height: "100%" }}
                 />
               </div>
               <h3>{collection.name}</h3>
