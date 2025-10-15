@@ -33,8 +33,8 @@ interface ProductSaved extends Omit<ProductInput, "colorOptions" | "size"> {
   size: string[];
 }
 
-const sizes = ["XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL", "6XL", "7XL", "8XL"];
-const stitchingOptions = ["Stitched", "Unstitched"];
+const sizes = ["Free-size Material", "XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL", "6XL", "7XL", "8XL"];
+const stitchingOptions = ["Stitched", "Unstitched", "semi-Stitched"];
 
 interface Props {
   productId?: string; // for edit mode
