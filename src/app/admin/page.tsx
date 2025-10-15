@@ -132,7 +132,7 @@ const AdminPage = () => {
                   key={product.id}
                   product={product}
                   onEdit={(id) => setEditProductId(id)}
-                  onDeleteComplete={getProducts}
+                  onDelete={getProducts}
                 />
               ))
             )}
