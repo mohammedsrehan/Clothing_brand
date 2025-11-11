@@ -12,10 +12,13 @@ import {
   Alert,
 } from "@mui/material";
 import AddEditProductForm from "../components/AddProduct/addEditProduct";
-import { collection, getDocs, query } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+} from "firebase/firestore";
 import { db, auth } from "../firebase";
-import Product from "../components/Product/product";
-import styles from "./admin.module.css";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -24,6 +27,7 @@ import {
 } from "firebase/auth";
 import AdminProductCard from "../components/adminProductCard/adminProductCard";
 import AddEditProduct from "../components/AddProduct/addEditProduct";
+import styles from "./admin.module.css";
 
 const AdminPage = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -31,48 +35,45 @@ const AdminPage = () => {
   const [password, setPassword] = useState<string>("");
   const [loginError, setLoginError] = useState<string>("");
   const [authLoading, setAuthLoading] = useState(false);
-
   const [editProductId, setEditProductId] = useState<string | null>(null);
-
   const [activeSection, setActiveSection] = useState("allProducts");
   const [data, setData] = useState<any[]>([]);
+
+  // ✅ Fetch products ordered by creation time (newest first)
   const getProducts = async () => {
-    // This function would typically fetch products from your database
-    const querySnapshot = await getDocs(collection(db, "products"));
-    const fetchedData: any[] = [];
-    querySnapshot.forEach((doc) => {
-      // setData =
-      fetchedData.push({ id: doc.id, ...doc.data() });
-    });
-    setData(fetchedData);
-    console.log(fetchedData);
+    try {
+      const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+      const querySnapshot = await getDocs(q);
+      const fetchedData: any[] = [];
+      querySnapshot.forEach((doc) => {
+        fetchedData.push({ id: doc.id, ...doc.data() });
+      });
+      setData(fetchedData);
+      console.log("Fetched Products:", fetchedData);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    // if (!auth) return;
-    // setLoginError("null");
-
+    setAuthLoading(true);
     try {
-      // HIGHLIGHT: Sign in with email and password
       await signInWithEmailAndPassword(auth, email, password);
-
-      console.log("running");
-      // setAuthLoading(false);
+      console.log("Login successful");
     } catch (error) {
       console.error("Login failed:", error);
-      // Display a user-friendly error message
       setLoginError("Sign-in failed. Please check your email and password.");
+    } finally {
       setAuthLoading(false);
     }
   };
 
   const handleSignOut = async () => {
-    if (!auth) return;
     try {
       await signOut(auth);
       setUser(null);
-      setData([]); // Clear product data on logout
+      setData([]);
       setActiveSection("allProducts");
     } catch (error) {
       console.error("Sign-out failed:", error);
@@ -88,59 +89,51 @@ const AdminPage = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      // HIGHLIGHT: Sets initialization complete and also stops the login spinner
-      // if it was triggered by a successful login.
-      // setIsAppInitializing(false);
-      // setIsSigningIn(false); // Clear the button spinner on any auth change
-
       console.log(
         "Auth State Changed: User is now:",
         currentUser ? currentUser.email || "Anonymous" : "Logged Out"
       );
-      console.log("Is user anonymous?", currentUser?.isAnonymous);
     });
-
     return () => unsubscribe();
   }, []);
 
   const renderSection = () => {
     switch (activeSection) {
       case "addProduct":
-        return <AddEditProductForm />;
+        return <AddEditProductForm onComplete={getProducts} />;
+
       case "allProducts":
-  return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        All Products
-      </Typography>
-      {editProductId ? (
-        <AddEditProduct
-          productId={editProductId}
-          onComplete={() => {
-            setEditProductId(null);
-            getProducts();
-          }}
-        />
-      ) : (
-        <>
-          <div className={styles.products}>
-            {data.length === 0 ? (
-              <p>No products found</p>
+        return (
+          <Box sx={{ padding: 4 }}>
+            <Typography variant="h5" gutterBottom>
+              All Products
+            </Typography>
+            {editProductId ? (
+              <AddEditProduct
+                productId={editProductId}
+                onComplete={() => {
+                  setEditProductId(null);
+                  getProducts();
+                }}
+              />
             ) : (
-              data.map((product) => (
-                <AdminProductCard
-                  key={product.id}
-                  product={product}
-                  onEdit={(id) => setEditProductId(id)}
-                  onDelete={getProducts}
-                />
-              ))
+              <div className={styles.products}>
+                {data.length === 0 ? (
+                  <p>No products found</p>
+                ) : (
+                  data.map((product) => (
+                    <AdminProductCard
+                      key={product.id}
+                      product={product}
+                      onEdit={(id) => setEditProductId(id)}
+                      onDelete={getProducts}
+                    />
+                  ))
+                )}
+              </div>
             )}
-          </div>
-        </>
-      )}
-    </Box>
-  );
+          </Box>
+        );
 
       case "ordersReceived":
         return (
@@ -153,6 +146,7 @@ const AdminPage = () => {
             </Typography>
           </Box>
         );
+
       case "processingOrders":
         return (
           <Box sx={{ padding: 4 }}>
@@ -165,6 +159,7 @@ const AdminPage = () => {
             </Typography>
           </Box>
         );
+
       case "pastOrders":
         return (
           <Box sx={{ padding: 4 }}>
@@ -177,6 +172,7 @@ const AdminPage = () => {
             </Typography>
           </Box>
         );
+
       default:
         return (
           <Box sx={{ padding: 4, textAlign: "center" }}>
@@ -191,6 +187,7 @@ const AdminPage = () => {
     }
   };
 
+  // ✅ Auth Loading Spinner
   if (authLoading) {
     return (
       <Container
@@ -211,6 +208,7 @@ const AdminPage = () => {
     );
   }
 
+  // ✅ Login Page
   if (!user) {
     return (
       <Container maxWidth="xs" sx={{ mt: 8 }}>
@@ -273,6 +271,7 @@ const AdminPage = () => {
     );
   }
 
+  // ✅ Admin Dashboard
   return (
     <Container maxWidth="xl" sx={{ mt: 4 }}>
       <Stack

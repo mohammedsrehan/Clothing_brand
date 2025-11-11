@@ -2,41 +2,90 @@
 
 import styles from "./page.module.css";
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "./firebase"; // Assuming you have firebase.js/ts file setup
-import Product from "./components/Product/product"; // Assuming this component exists
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  limit,
+  startAfter,
+  DocumentData,
+  QueryDocumentSnapshot,
+  updateDoc,
+  Timestamp,
+  doc,
+} from "firebase/firestore";
+import { db } from "./firebase"; // your firebase config file
+import Product from "./components/Product/product";
 import Navbar from "./components/Navbar/navbar";
-import CartModal from "./components/Cart/CartModal"; // Ensure this path is correct
+import CartModal from "./components/Cart/CartModal";
 
 const collections = [
-  {
-    name: "Pakistani Dresses",
-    image: "/pakistani_dress.png",
-  },
-  {
-    name: "Indian Dresses",
-    image: "/indian_dress.png",
-  },
-  {
-    name: "Sarees",
-    image: "/saree_dress.png",
-  },
+  { name: "Pakistani Dresses", image: "/pakistani_dress.png" },
+  { name: "Indian Dresses", image: "/indian_dress.png" },
+  { name: "Sarees", image: "/saree_dress.png" },
 ];
 
 export default function LandingPage() {
   const [data, setData] = useState<any[]>([]);
-
-  // CRITICAL: State to control the visibility of the Cart Modal (Drawer)
+  const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot<DocumentData> | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
+  // Fetch initial 20 products (latest first)
   const getProducts = async () => {
-    // Fetches products from Firestore
-    const querySnapshot = await getDocs(collection(db, "products"));
-    const fetchedData: any[] = [];
-    querySnapshot.forEach((doc) => {
-      fetchedData.push({ id: doc.id, ...doc.data() });
-    });
-    setData(fetchedData);
+    setLoading(true);
+    try {
+      const q = query(
+        collection(db, "products"),
+        // Sort by date (latest first)
+        orderBy("createdAt", "desc"), 
+        limit(18)
+      );
+
+      const querySnapshot = await getDocs(q);
+      const fetchedData: any[] = [];
+      querySnapshot.forEach((doc) => fetchedData.push({ id: doc.id, ...doc.data() }));
+
+      const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+      setData(fetchedData);
+      setLastDoc(lastVisible);
+      setHasMore(querySnapshot.docs.length === 18);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ Load more products (next 20)
+  const loadMoreProducts = async () => {
+    if (!lastDoc) return;
+    setLoading(true);
+    try {
+      const q = query(
+        collection(db, "products"),
+        orderBy("createdAt", "desc"),
+        startAfter(lastDoc),
+        limit(18)
+      );
+
+      const querySnapshot = await getDocs(q);
+      const fetchedData: any[] = [];
+      querySnapshot.forEach((doc) => fetchedData.push({ id: doc.id, ...doc.data() }));
+
+      const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+      setData((prev) => [...prev, ...fetchedData]);
+      setLastDoc(lastVisible);
+      setHasMore(querySnapshot.docs.length === 18);
+    } catch (err) {
+      console.error("Error loading more products:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -45,14 +94,11 @@ export default function LandingPage() {
 
   return (
     <div className={styles.container}>
-      {/* 1. Navbar is rendered and given the function to OPEN the cart */}
+      {/* Navbar with cart toggle */}
       <Navbar onOpenCart={() => setIsCartOpen(true)} />
 
-      {/* 2. CartModal is rendered and controls its visibility based on state */}
-      <CartModal
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)} // Function to CLOSE the cart
-      />
+      {/* Cart Modal */}
+      <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
       {/* Hero Section */}
       <section className={styles.hero}>
@@ -75,7 +121,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Our Collections Section */}
+      {/* Our Collections */}
       <section className={styles.collectionsSection}>
         <h2 className={styles.sectionTitle}>Our Collections</h2>
         <div className={styles.collectionsGrid}>
@@ -94,16 +140,26 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Featured Products Section */}
+      {/* Featured Products */}
       <section className={styles.featuredProductsSection} id="shop">
         <h2 className={styles.sectionTitle}>Featured Products</h2>
         <div className={styles.productsGrid}>
-          {data.length === 0 ? (
-            <p>Loading products...</p>
-          ) : (
-            data.map((product) => (
-              <Product key={product.id} product={product} />
-            ))
+          {data.length === 0 && !loading && <p>No products found.</p>}
+          {data.map((product) => (
+            <Product key={product.id} product={product} />
+          ))}
+        </div>
+
+        {/* Load More Button */}
+        <div style={{ textAlign: "center", marginTop: "2rem" }}>
+          {loading && <p>Loading...</p>}
+          {!loading && hasMore && (
+            <button className={styles.shopNowButton} onClick={loadMoreProducts}>
+              Load More
+            </button>
+          )}
+          {!hasMore && data.length > 0 && (
+            <p style={{ color: "#666", marginTop: "1rem" }}>No more products to load</p>
           )}
         </div>
       </section>

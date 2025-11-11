@@ -11,7 +11,7 @@ import {
   Chip,
   CircularProgress,
 } from "@mui/material";
-import { collection, addDoc, doc, updateDoc, getDoc } from "firebase/firestore";
+import { collection, addDoc, doc, updateDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/app/firebase";
 
 interface ProductInput {
@@ -121,7 +121,11 @@ const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
         await updateDoc(doc(db, "products", productId), productData);
         setMessage("Product updated successfully!");
       } else {
-        await addDoc(collection(db, "products"), productData);
+        await addDoc(collection(db, "products"), {
+          ...productData,
+          createdAt: serverTimestamp(),
+        }
+      );
         setMessage("Product added successfully!");
       }
 
