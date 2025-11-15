@@ -11,8 +11,17 @@ import {
   Chip,
   CircularProgress,
 } from "@mui/material";
-import { collection, addDoc, doc, updateDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  doc,
+  updateDoc,
+  getDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 import { db } from "@/app/firebase";
+
+import imageCompression from "browser-image-compression";
 
 interface ProductInput {
   collectionName: string;
@@ -33,12 +42,26 @@ interface ProductSaved extends Omit<ProductInput, "colorOptions" | "size"> {
   size: string[];
 }
 
-const sizes = ["Free-size Material", "XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL", "6XL", "7XL", "8XL"];
+const sizes = [
+  "Free-size Material",
+  "XS",
+  "S",
+  "M",
+  "L",
+  "XL",
+  "XXL",
+  "3XL",
+  "4XL",
+  "5XL",
+  "6XL",
+  "7XL",
+  "8XL",
+];
 const stitchingOptions = ["Stitched", "Unstitched", "semi-Stitched"];
 
 interface Props {
-  productId?: string; // for edit mode
-  onComplete?: () => void; // callback to refresh list
+  productId?: string;
+  onComplete?: () => void;
 }
 
 const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
@@ -64,31 +87,68 @@ const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
   useEffect(() => {
     const fetchProduct = async () => {
       if (!productId) return;
+
       const docRef = doc(db, "products", productId);
       const docSnap = await getDoc(docRef);
+
       if (docSnap.exists()) {
         const data = docSnap.data() as ProductSaved;
+
         setProduct({
           ...data,
           colorOptions: data.colorOptions.join(", "),
         });
       }
     };
+
     fetchProduct();
   }, [productId]);
 
+  // ---------------------------
+  // COMPRESS IMAGES HERE
+  // ---------------------------
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+
+    const selectedFiles = Array.from(e.target.files);
+
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1500,
+      useWebWorker: true,
+    };
+
+    try {
+      const compressedFiles = await Promise.all(
+        selectedFiles.map(async (file) => {
+          try {
+            return await imageCompression(file, options);
+          } catch (err) {
+            console.error("Compression failed:", err);
+            return file;
+          }
+        })
+      );
+
+      setFiles(compressedFiles);
+    } catch (error) {
+      console.error("Compression error:", error);
+      setMessage("Error compressing images.");
+    }
+  };
+
   const handleChange = (e: any) => {
     const { name, value } = e.target;
+
     setProduct((prev) => ({
       ...prev,
       [name]: name === "price" ? Number(value) : value,
     }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) setFiles(Array.from(e.target.files));
-  };
-
+  // -------------------------------------
+  // HANDLE SUBMIT + API ERROR LOG DISPLAY
+  // -------------------------------------
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -106,17 +166,41 @@ const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
         size: product.size,
       };
 
+      // -------------------------
+      // UPLOAD IMAGES
+      // -------------------------
       if (files.length > 0) {
         const formData = new FormData();
         files.forEach((file) => formData.append("files", file));
+
         const uploadResponse = await fetch("/api/upload", {
           method: "POST",
           body: formData,
         });
+
         const result = await uploadResponse.json();
-        productData.images = result.urls || [];
+
+        // If API returned error → show to user
+        if (!uploadResponse.ok) {
+          const apiError = result?.error || "Image upload failed";
+          setMessage(`Upload error: ${apiError}`);
+          throw new Error(apiError);
+        }
+
+        // Filter undefined URLs
+        let urls = result.urls || [];
+        urls = urls.filter((u: string | undefined) => u && u !== "");
+
+        if (urls.length === 0) {
+          throw new Error("No valid images returned from Cloudinary.");
+        }
+
+        productData.images = urls;
       }
 
+      // -------------------------
+      // SAVE TO FIRESTORE
+      // -------------------------
       if (isEditMode && productId) {
         await updateDoc(doc(db, "products", productId), productData);
         setMessage("Product updated successfully!");
@@ -124,16 +208,15 @@ const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
         await addDoc(collection(db, "products"), {
           ...productData,
           createdAt: serverTimestamp(),
-        }
-      );
+        });
         setMessage("Product added successfully!");
       }
 
       if (onComplete) onComplete();
       setFiles([]);
-    } catch (err) {
-      console.error(err);
-      setMessage("Error saving product.");
+    } catch (err: any) {
+      console.error("Product save error:", err);
+      setMessage(`Error: ${err.message || "Something went wrong"}`);
     } finally {
       setLoading(false);
     }
@@ -145,6 +228,7 @@ const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
         <Typography variant="h5" align="center" fontWeight="bold" gutterBottom>
           {isEditMode ? "Edit Product" : "Add Product"}
         </Typography>
+
         <Box component="form" onSubmit={handleSubmit}>
           <TextField
             fullWidth
@@ -154,6 +238,7 @@ const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
             value={product.collectionName}
             onChange={handleChange}
           />
+
           <TextField
             fullWidth
             margin="normal"
@@ -162,6 +247,7 @@ const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
             value={product.productName}
             onChange={handleChange}
           />
+
           <TextField
             fullWidth
             margin="normal"
@@ -171,6 +257,7 @@ const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
             value={product.price}
             onChange={handleChange}
           />
+
           <TextField
             select
             fullWidth
@@ -186,6 +273,7 @@ const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
               </MenuItem>
             ))}
           </TextField>
+
           <TextField
             select
             fullWidth
@@ -193,7 +281,9 @@ const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
             label="Sizes"
             name="size"
             value={product.size}
-            onChange={(e: any) => setProduct((p) => ({ ...p, size: e.target.value }))}
+            onChange={(e: any) =>
+              setProduct((p) => ({ ...p, size: e.target.value }))
+            }
             SelectProps={{
               multiple: true,
               renderValue: (selected: any) => (
@@ -211,6 +301,7 @@ const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
               </MenuItem>
             ))}
           </TextField>
+
           <TextField
             fullWidth
             margin="normal"
@@ -219,6 +310,7 @@ const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
             value={product.colorOptions}
             onChange={handleChange}
           />
+
           <TextField
             fullWidth
             multiline
@@ -229,6 +321,7 @@ const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
             value={product.description}
             onChange={handleChange}
           />
+
           <TextField
             fullWidth
             margin="normal"
@@ -237,6 +330,7 @@ const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
             value={product.top}
             onChange={handleChange}
           />
+
           <TextField
             fullWidth
             margin="normal"
@@ -245,6 +339,7 @@ const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
             value={product.bottom}
             onChange={handleChange}
           />
+
           <TextField
             fullWidth
             margin="normal"
@@ -291,6 +386,3 @@ const AddEditProduct: React.FC<Props> = ({ productId, onComplete }) => {
 };
 
 export default AddEditProduct;
-
-
-
